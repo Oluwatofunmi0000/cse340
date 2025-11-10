@@ -1,6 +1,84 @@
-/******* Change Box Model ***************/
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
+/* Mobile-first base */
+:root{
+  --primary:#005b96;
+  --accent:#ff6f3c;
+  --bg:#ffffff;
+  --text:#222;
+  --container-padding:1rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+*{box-sizing:border-box}
+body{margin:0;color:var(--text);background:var(--bg);line-height:1.4}
+.container{padding:var(--container-padding);max-width:1100px;margin:0 auto}
+.site-body{background:url('/images/site/checkerboard.jpg') repeat center center fixed}
+.frame{background:#fff;max-width:760px;margin:1rem auto;border:3px solid #0aaec9;box-shadow:0 0 0 4px #000;padding:0 0 0 0}
+main{padding:0 1rem 2rem}
+
+/* header/navigation */
+.site-header{padding:.5rem 1rem;background:#fff;color:#000;border-bottom:6px solid #000}
+.site-header .logo{margin:0;font-size:1.3rem}
+.account-link{font-size:.7rem;letter-spacing:.05em;font-weight:600;color:#222;text-decoration:none;text-transform:uppercase}
+.account-link:hover{text-decoration:underline}
+.main-nav{background:#222}
+.nav-list{list-style:none;padding:0;margin:0;display:flex;gap:.25rem;justify-content:space-between}
+.nav-list li{flex:1;text-align:center}
+.nav-list a{color:#fff;text-decoration:none;font-size:.8rem;padding:.5rem 0;display:block;background:#2b2b2b}
+.nav-list a:hover, .nav-list a:focus{background:#333}
+.nav-list a:hover, .nav-list a:focus{text-decoration:underline}
+
+/* header bar account link */
+.header-bar{display:flex;align-items:center;justify-content:space-between}
+.account-link{color:#fff;text-decoration:none;font-size:.9rem;font-weight:600}
+.account-link:hover{text-decoration:underline}
+
+/* hero */
+/* welcome */
+.welcome{padding:0 1rem}
+.welcome h2{margin:1rem 0 .75rem;font-size:1.25rem}
+
+/* delorean hero */
+.hero-delorean{display:flex;flex-direction:column;gap:.5rem;padding:0 1rem 1rem;background:rgba(255,255,255,0.95);margin:0 1rem;border-radius:4px}
+.hero-left{position:relative;z-index:2;max-width:230px}
+.vehicle-name{color:#0099c7;margin:.2rem 0 .4rem;font-size:1rem}
+.vehicle-features{list-style:none;padding:0;margin:0 0 .6rem;color:#066}
+.vehicle-features li{font-size:.7rem;line-height:1.2}
+.hero-car{position:relative}
+.hero-car img{width:100%;max-width:370px;height:auto;display:block;margin-left:auto;margin-top:.25rem}
+.hero-overlay{position:relative;height:0}
+.hero-overlay .own-today{position:absolute;left:15px;top:-100px}
+.own-today{display:inline-block}
+.hero-delorean .own-today{background:#0099c7;color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.15)}
+.hero-delorean .own-today:hover{filter:brightness(.9)}
+.btn{display:inline-block;background:var(--accent);color:white;padding:.6rem 1rem;border-radius:6px;text-decoration:none;font-weight:600}
+.btn:hover{filter:brightness(.9)}
+
+/* panels */
+.panel-row{display:flex;flex-direction:column;gap:2rem;padding:0 1rem 1.25rem}
+.panel h3{margin:0 0 .75rem;font-size:.85rem}
+.upgrade-grid{display:grid;grid-template-columns:repeat(2,150px);gap:.75rem}
+.upgrade{background:#0aaec9;padding:.5rem;border:1px solid #000;display:flex;flex-direction:column;align-items:center;gap:.4rem;text-decoration:none;color:#000;border-radius:2px}
+.upgrade img{width:100%;height:100px;object-fit:cover;background:#fff;border:1px solid #000}
+.upgrade-caption{font-size:.7rem;text-align:center}
+.upgrade:hover{outline:2px solid var(--accent);outline-offset:2px}
+.review-list{list-style:disc;padding-left:1.1rem;margin:.25rem 0 0;font-size:.6rem}
+.review-list li{margin-bottom:.4rem;max-width:280px}
+
+/* features */
+/* (removed old features section styles) */
+
+/* footer */
+.site-footer{padding:1rem 0;background:#222;color:white;text-align:center}
+
+/* One media query for larger screens */
+@media (min-width:768px){
+  .hero-delorean{flex-direction:row;align-items:center}
+  .hero-left{flex:1}
+  .hero-car{flex:1}
+  .hero-overlay .own-today{top:-100px;left:15px}
+  .panel-row{flex-direction:row;align-items:flex-start}
+  .upgrades, .reviews{flex:1}
+  .upgrade-grid{grid-template-columns:repeat(2,1fr)}
+  .review-list{font-size:.65rem}
+  .frame{max-width:800px;margin:2rem auto}
 }

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: cse340-vehicles
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cse340-db
+          property: connectionString
+      - key: PGSSLMODE
+        value: require
+    autoDeploy: true
+
+# Optional managed Postgres instance
+# Connection string will be injected into the web service via fromDatabase above.
+databases:
+  - name: cse340-db
+    plan: free
+    region: oregon

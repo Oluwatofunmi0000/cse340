@@ -5,39 +5,88 @@
 /* ***********************
  * Require Statements
  *************************/
-const express = require("express")
-const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
-const app = express()
-const static = require("./routes/static")
+const express = require("express");
+const expressLayouts = require("express-ejs-layouts");
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+const app = express();
+const static = require("./routes/static");
+const inventoryRoute = require("./routes/inventoryRoute");
+const utilities = require("./utilities/");
+const errorHandlers = require("./middleware/errorHandler");
 
 /* ***********************
  * View Engine and Templates
  *************************/
-app.set("view engine", "ejs")
-app.use(expressLayouts)
-app.set("layout", "./layouts/layout") // not at views root
+app.set("view engine", "ejs");
+app.use(expressLayouts);
+app.set("layout", "./layouts/layout"); // not at views root
 
 /* ***********************
  * Routes
  *************************/
-app.use(static)
+app.use(static);
+
+// Lightweight health route (no DB access)
+app.get('/health', (req, res) => {
+  res.type('text/plain').send('OK');
+});
 
 // Index route
-app.get("/", function(req, res) {
-  res.render("index", { title: "Home" })
-})
+app.get("/", utilities.handleErrors(async function(req, res) {
+  let nav = await utilities.getNav();
+  res.render("index", { title: "Home", nav });
+}));
+
+// Inventory routes
+app.use("/inv", inventoryRoute);
+
+// 404 Handler - Must be after all other routes
+app.use(errorHandlers.notFoundHandler);
+
+// Error Handler - Must be last
+app.use(errorHandlers.errorHandler);
 
 /* ***********************
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = parseInt(process.env.PORT, 10) || 5000;
+const host = process.env.HOST || '0.0.0.0';
+
+process.on('uncaughtException', (err) => {
+  console.error('[fatal] Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[fatal] Unhandled Rejection:', reason);
+});
 
 /* ***********************
- * Log statement to confirm server operation
+ * Start server with graceful EADDRINUSE handling
  *************************/
-app.listen(port, () => {
-  console.log(`app listening on http://${host}:${port}`)
-})
+function startServer() {
+  try {
+    const server = app.listen(port, host, () => {
+      const addr = server.address();
+      console.log(`[startup] Listening on ${typeof addr === 'object' ? `${addr.address}:${addr.port}` : addr}`);
+    });
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`[startup] Port ${port} in use. Free it or set PORT env.`);
+        process.exit(1);
+      } else {
+        console.error('[startup] Server error:', err);
+        process.exit(1);
+      }
+    });
+    // Post-listen verification after short delay
+    setTimeout(() => {
+      console.log('[verify] Server initialization complete. Test /health endpoint.');
+    }, 500);
+  } catch (e) {
+    console.error('[startup] Failed to start server:', e.message);
+    process.exit(1);
+  }
+}
+
+startServer();

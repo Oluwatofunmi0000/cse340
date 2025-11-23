@@ -12,9 +12,12 @@ require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 const app = express();
 const static = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
+const accountRoute = require("./routes/accountRoute");
 const utilities = require("./utilities/");
 const errorHandlers = require("./middleware/errorHandler");
 const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const { checkLogin } = require("./middleware/auth");
 
 /* ***********************
  * View Engine and Templates
@@ -28,6 +31,9 @@ app.set("layout", "./layouts/layout"); // not at views root
  *************************/
 // Parse form data
 app.use(express.urlencoded({ extended: true }));
+
+// Parse cookies
+app.use(cookieParser());
 
 // Session for simple flash-like messaging
 app.use(
@@ -45,6 +51,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Check login status (JWT) and expose to all views
+app.use(checkLogin);
+
 app.use(static);
 
 // Lightweight health route (no DB access)
@@ -60,6 +69,9 @@ app.get("/", utilities.handleErrors(async function(req, res) {
 
 // Inventory routes
 app.use("/inv", inventoryRoute);
+
+// Account routes
+app.use("/account", accountRoute);
 
 // 404 Handler - Must be after all other routes
 app.use(errorHandlers.notFoundHandler);

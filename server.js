@@ -14,6 +14,7 @@ const static = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
 const utilities = require("./utilities/");
 const errorHandlers = require("./middleware/errorHandler");
+const session = require("express-session");
 
 /* ***********************
  * View Engine and Templates
@@ -25,6 +26,25 @@ app.set("layout", "./layouts/layout"); // not at views root
 /* ***********************
  * Routes
  *************************/
+// Parse form data
+app.use(express.urlencoded({ extended: true }));
+
+// Session for simple flash-like messaging
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "cse340-secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+// Expose one-time message to views
+app.use((req, res, next) => {
+  res.locals.message = req.session.message;
+  delete req.session.message;
+  next();
+});
+
 app.use(static);
 
 // Lightweight health route (no DB access)

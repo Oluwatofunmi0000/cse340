@@ -13,6 +13,7 @@ const app = express();
 const static = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
 const accountRoute = require("./routes/accountRoute");
+const reviewRoute = require("./routes/reviewRoute");
 const utilities = require("./utilities/");
 const errorHandlers = require("./middleware/errorHandler");
 const session = require("express-session");
@@ -72,6 +73,9 @@ app.use("/inv", inventoryRoute);
 
 // Account routes
 app.use("/account", accountRoute);
+
+// Review routes
+app.use("/review", reviewRoute);
 
 // 404 Handler - Must be after all other routes
 app.use(errorHandlers.notFoundHandler);

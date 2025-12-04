@@ -1,4 +1,5 @@
 const invModel = require("../models/inventory-model");
+const reviewModel = require("../models/review-model");
 const utilities = require("../utilities/");
 
 const invCont = {};
@@ -38,12 +39,20 @@ invCont.buildVehicleDetail = async function (req, res, next) {
   
   const detail = utilities.buildVehicleDetail(vehicle);
   let nav = await utilities.getNav();
+  
+  // Get reviews and stats for this vehicle
+  const reviews = await reviewModel.getReviewsByInventory(inv_id);
+  const stats = await reviewModel.getReviewStats(inv_id);
+  
   const vehicleTitle = `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`;
   
   res.render("./inventory/detail", {
     title: vehicleTitle,
     nav,
     detail,
+    inv_id,
+    reviews,
+    stats,
   });
 };
 

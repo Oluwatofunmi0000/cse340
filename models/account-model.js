@@ -6,10 +6,11 @@ const pool = require("../database/connection");
 async function registerAccount(account_firstname, account_lastname, account_email, account_password) {
   try {
     const sql = "INSERT INTO account (account_firstname, account_lastname, account_email, account_password, account_type) VALUES ($1, $2, $3, $4, 'Client') RETURNING *";
-    return await pool.query(sql, [account_firstname, account_lastname, account_email, account_password]);
+    const result = await pool.query(sql, [account_firstname, account_lastname, account_email, account_password]);
+    return result;
   } catch (error) {
-    console.error("registerAccount error: " + error);
-    return error.message;
+    console.error("registerAccount error: " + error.message);
+    throw error;
   }
 }
 
@@ -22,8 +23,8 @@ async function checkExistingEmail(account_email) {
     const email = await pool.query(sql, [account_email]);
     return email.rowCount;
   } catch (error) {
-    console.error("checkExistingEmail error: " + error);
-    return error.message;
+    console.error("checkExistingEmail error: " + error.message);
+    return 0;
   }
 }
 

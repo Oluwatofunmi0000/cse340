@@ -22,69 +22,83 @@ accountCont.buildRegister = async function (req, res) {
 *  Process Registration
 * *************************************** */
 accountCont.registerAccount = async function (req, res) {
-  let nav = await utilities.getNav();
-  const errors = validationResult(req);
-  const { account_firstname, account_lastname, account_email, account_password } = req.body;
-
-  if (!errors.isEmpty()) {
-    return res.status(400).render("account/register", {
-      title: "Register",
-      nav,
-      errors: errors.array(),
-      account_firstname,
-      account_lastname,
-      account_email,
-    });
-  }
-
-  // Check if email exists
-  const emailExists = await accountModel.checkExistingEmail(account_email);
-  if (emailExists) {
-    return res.status(400).render("account/register", {
-      title: "Register",
-      nav,
-      errors: [{ msg: "Email already in use. Please login or use a different email." }],
-      account_firstname,
-      account_lastname,
-      account_email,
-    });
-  }
-
-  // Hash password
-  let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(account_password, 10);
-  } catch (error) {
-    return res.status(500).render("account/register", {
+    let nav = await utilities.getNav();
+    const errors = validationResult(req);
+    const { account_firstname, account_lastname, account_email, account_password } = req.body;
+
+    if (!errors.isEmpty()) {
+      return res.status(400).render("account/register", {
+        title: "Register",
+        nav,
+        errors: errors.array(),
+        account_firstname,
+        account_lastname,
+        account_email,
+      });
+    }
+
+    // Check if email exists
+    const emailExists = await accountModel.checkExistingEmail(account_email);
+    if (emailExists) {
+      return res.status(400).render("account/register", {
+        title: "Register",
+        nav,
+        errors: [{ msg: "Email already in use. Please login or use a different email." }],
+        account_firstname,
+        account_lastname,
+        account_email,
+      });
+    }
+
+    // Hash password
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(account_password, 10);
+    } catch (error) {
+      return res.status(500).render("account/register", {
+        title: "Register",
+        nav,
+        errors: [{ msg: "Failed to process password." }],
+        account_firstname,
+        account_lastname,
+        account_email,
+      });
+    }
+
+    const regResult = await accountModel.registerAccount(
+      account_firstname,
+      account_lastname,
+      account_email,
+      hashedPassword
+    );
+
+    if (regResult && regResult.rows && regResult.rows[0]) {
+      req.session.message = `Registration successful! Please log in, ${account_firstname}.`;
+      return res.status(201).redirect("/account/login");
+    }
+
+    res.status(500).render("account/register", {
       title: "Register",
       nav,
-      errors: [{ msg: "Failed to process password." }],
+      errors: [{ msg: "Registration failed. Please try again." }],
+      account_firstname,
+      account_lastname,
+      account_email,
+    });
+  } catch (error) {
+    console.error("registerAccount error:", error);
+    let nav = await utilities.getNav();
+    const { account_firstname, account_lastname, account_email } = req.body;
+    res.status(500).render("account/register", {
+      title: "Register",
+      nav,
+      errors: [{ msg: "An error occurred during registration: " + error.message }],
       account_firstname,
       account_lastname,
       account_email,
     });
   }
-
-  const regResult = await accountModel.registerAccount(
-    account_firstname,
-    account_lastname,
-    account_email,
-    hashedPassword
-  );
-
-  if (regResult) {
-    req.session.message = `Registration successful! Please log in, ${account_firstname}.`;
-    return res.status(201).redirect("/account/login");
-  }
-
-  res.status(500).render("account/register", {
-    title: "Register",
-    nav,
-    errors: [{ msg: "Registration failed. Please try again." }],
-    account_firstname,
-    account_lastname,
-    account_email,
-  });
 };
 
 /* ****************************************

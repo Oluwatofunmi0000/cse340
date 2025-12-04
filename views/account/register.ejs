@@ -1,12 +1,12 @@
 <h1>Register</h1>
 
-<% if (typeof message !== 'undefined' && message) { %>
-  <p class="notice"><%= message %></p>
+<% if (locals.message) { %>
+  <p class="notice"><%= locals.message %></p>
 <% } %>
 
-<% if (typeof errors !== 'undefined' && errors.length) { %>
+<% if (locals.errors && locals.errors.length > 0) { %>
   <ul class="errors">
-    <% errors.forEach(e => { %>
+    <% locals.errors.forEach(e => { %>
       <li><%= e.msg %></li>
     <% }) %>
   </ul>
@@ -23,10 +23,17 @@
   <input type="email" id="account_email" name="account_email" required value="<%= locals.account_email || '' %>">
 
   <label for="account_password">Password</label>
+  <p class="help" style="margin-top: 0; margin-bottom: 5px; color: #666; font-size: 0.9em;">
+    <strong>Password Requirements:</strong><br>
+    • At least 12 characters long<br>
+    • At least one uppercase letter (A-Z)<br>
+    • At least one lowercase letter (a-z)<br>
+    • At least one number (0-9)<br>
+    • At least one special character (@$!%*?&)
+  </p>
   <input type="password" id="account_password" name="account_password" required 
-    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$"
-    title="Must be at least 12 characters with uppercase, lowercase, number, and symbol">
-  <p class="help">Password must be at least 12 characters with uppercase, lowercase, number, and symbol.</p>
+    minlength="12"
+    title="Must be at least 12 characters with uppercase, lowercase, number, and special character">
 
   <button type="submit">Register</button>
 </form>

@@ -104,6 +104,34 @@ main{padding:0 1rem 2rem}
 .error-container p{font-size:1rem;margin:1rem 0;color:#666}
 .error-container a{color:var(--primary);text-decoration:underline}
 
+/* Form Error and Notice Messages */
+.errors, .notice {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.errors {
+  background: #fee;
+  border: 2px solid #c33;
+  color: #c33;
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.errors li {
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+.notice {
+  background: #dff0d8;
+  border: 2px solid #3c763d;
+  color: #3c763d;
+  font-weight: 600;
+}
+
 /* One media query for larger screens */
 @media (min-width:768px){
   .hero-delorean{flex-direction:row;align-items:center}

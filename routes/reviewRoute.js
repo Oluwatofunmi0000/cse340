@@ -2,7 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const reviewController = require("../controllers/reviewController");
 const utilities = require("../utilities/");
-const { checkLogin } = require("../middleware/auth");
+const { requireAuth } = require("../middleware/auth");
 const { body } = require("express-validator");
 
 // Review validation rules
@@ -20,14 +20,14 @@ const reviewRules = [
 // Add review form (protected - logged in users only)
 router.get(
   "/add/:id",
-  checkLogin,
+  requireAuth,
   utilities.handleErrors(reviewController.buildAddReview)
 );
 
 // Submit review (protected - logged in users only)
 router.post(
   "/add",
-  checkLogin,
+  requireAuth,
   reviewRules,
   utilities.handleErrors(reviewController.submitReview)
 );
@@ -35,7 +35,7 @@ router.post(
 // Delete review (protected - logged in users only)
 router.get(
   "/delete/:id",
-  checkLogin,
+  requireAuth,
   utilities.handleErrors(reviewController.deleteReview)
 );
 

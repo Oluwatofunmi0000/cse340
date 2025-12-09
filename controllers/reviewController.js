@@ -16,7 +16,7 @@ reviewCont.buildAddReview = async function (req, res) {
     let nav = await utilities.getNav();
     
     // Get vehicle details to display in form
-    const vehicle = await invModel.getInventoryById(inv_id);
+    const vehicle = await invModel.getVehicleById(inv_id);
     if (!vehicle) {
       console.error("buildAddReview - Vehicle not found for inv_id:", inv_id);
       req.session.message = "Vehicle not found.";
@@ -66,7 +66,7 @@ reviewCont.submitReview = async function (req, res) {
     console.log("submitReview - Processing review for inv_id:", inv_id, "account_id:", account_id);
 
     if (!errors.isEmpty()) {
-      const vehicle = await invModel.getInventoryById(inv_id);
+      const vehicle = await invModel.getVehicleById(inv_id);
       return res.status(400).render("review/add-review", {
         title: "Add Review",
         nav,
@@ -81,7 +81,7 @@ reviewCont.submitReview = async function (req, res) {
     // Check if user already reviewed this vehicle
     const existingReview = await reviewModel.checkExistingReview(inv_id, account_id);
     if (existingReview) {
-      const vehicle = await invModel.getInventoryById(inv_id);
+      const vehicle = await invModel.getVehicleById(inv_id);
       return res.status(400).render("review/add-review", {
         title: "Add Review",
         nav,
@@ -100,7 +100,7 @@ reviewCont.submitReview = async function (req, res) {
       return res.redirect(`/inv/detail/${inv_id}`);
     }
 
-    const vehicle = await invModel.getInventoryById(inv_id);
+    const vehicle = await invModel.getVehicleById(inv_id);
     res.status(500).render("review/add-review", {
       title: "Add Review",
       nav,
